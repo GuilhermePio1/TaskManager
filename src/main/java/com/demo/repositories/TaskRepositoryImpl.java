@@ -1,9 +1,13 @@
 package com.demo.repositories;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+
+import com.demo.exceptions.DateInThePastException;
+import com.demo.exceptions.StringIsEmptyException;
 import com.demo.models.Task;
 
 public class TaskRepositoryImpl implements TaskRepository {
@@ -30,12 +34,30 @@ public class TaskRepositoryImpl implements TaskRepository {
 	}
 
 	@Override
-	public void create(Task task) {
+	public void create(Task task) throws StringIsEmptyException, DateInThePastException {
+		if (isEmpty(task.getTitle()) || isEmpty(task.getResponsible())) {
+			throw new StringIsEmptyException("Título ou Responsável esta vazio");
+		}
+		
+		boolean date = new Date().before(task.getDeadline());
+		if (!date) {
+			throw new DateInThePastException("Data está no passado");
+		}
+		
 		entityManager.persist(task);
 	}
 	
 	@Override
-	public void update(Task task) {
+	public void update(Task task) throws StringIsEmptyException, DateInThePastException {
+		if (isEmpty(task.getTitle()) || isEmpty(task.getResponsible())) {
+			throw new StringIsEmptyException("Título ou Responsável esta vazio");
+		}
+		
+		boolean date = new Date().before(task.getDeadline());
+		if (!date) {
+			throw new DateInThePastException("Data está no passado");
+		}
+		
 		entityManager.merge(task);
 	}
 	
@@ -53,4 +75,10 @@ public class TaskRepositoryImpl implements TaskRepository {
 		}
 	}
 
+	private boolean isEmpty(String string) {
+		if (string.isBlank() || string == null)
+			return true;
+		
+		return false;
+	}
 }

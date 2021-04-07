@@ -34,7 +34,8 @@
 				<label for="title" class="form-label">Título:</label>
 			</div>
 			<div class="col-11">
-				<h:inputText class="form-control" id="title" value="#{taskFindBean.editTask.title}"/>
+				<h:inputText class="form-control" id="title" value="#{taskFindBean.editTask.title}" required="true" label="Título"/>
+				<h:message for="title"></h:message>
 			</div>
 		</div>
 		<div class="row mt-3">
@@ -50,7 +51,8 @@
 				<label for="responsible" class="form-label">Responsável:</label>
 			</div>
 			<div class="col-4">
-				<h:inputText class="form-control" id="responsible" value="#{taskFindBean.editTask.responsible}"/>
+				<h:inputText class="form-control" id="responsible" value="#{taskFindBean.editTask.responsible}" required="true" label="Responsável"/>
+				<h:message for="responsible"></h:message>
 			</div>
 			<div class="col">
 				<label for="priority" class="form-label">Prioridade:</label>
@@ -66,14 +68,16 @@
 				<label for="deadline" class="form-label">Deadline:</label>
 			</div>
 			<div class="col-4">
-				<h:inputText class="form-control" id="deadline" value="#{taskFindBean.editTask.deadline}">
+				<h:inputText class="form-control" id="deadline" value="#{taskFindBean.editTask.deadline}" converterMessage="Coloque a data nesse formato dd/mm/yyyy">
 					<f:convertDateTime pattern="dd/MM/yyyy"/>
 				</h:inputText>
+				<h:message for="deadline"></h:message>
+				<h:message for="button"></h:message>
 			</div>
 		</div>
 		<div class="row mt-3 d-flex justify-content-center">
 		    <div class="col d-flex justify-content-center">
-				<h:commandButton class="btn btn-outline-secondary p-3" action="#{taskFindBean.update()}" value="Editar"/>
+				<h:commandButton class="btn btn-outline-secondary p-3" action="#{taskFindBean.edit()}" value="Editar" id="button" binding="#{taskFindBean.button}"/>
 		    </div>
 		</div>
 	</h:form>

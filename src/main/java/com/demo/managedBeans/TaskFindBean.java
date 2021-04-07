@@ -5,12 +5,17 @@ import java.util.Arrays;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
+import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
+import javax.faces.component.UIComponent;
+import javax.faces.context.FacesContext;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.demo.exceptions.DateInThePastException;
+import com.demo.exceptions.StringIsEmptyException;
 import com.demo.models.Priority;
 import com.demo.models.Situation;
 import com.demo.models.Task;
@@ -27,6 +32,7 @@ public class TaskFindBean {
 	private Task researchedTask;
 	private List<Task> allTasks;
 	private Task editTask;
+	private UIComponent button;
 
 	@PostConstruct
 	public void onload() {
@@ -146,22 +152,41 @@ public class TaskFindBean {
 	public Priority[] getPriorities() {
 		return Priority.values();
 	}
-	
+
 	public String edit() {
-		this.taskService.update(this.editTask);
-		return "index?faces-redirect=true";
+		try {
+			this.taskService.update(this.editTask);
+			return "index?faces-redirect=true";			
+		}catch (StringIsEmptyException e) {
+			e.printStackTrace();
+			return null;
+		}catch (DateInThePastException e) {
+			FacesMessage message = new FacesMessage("Coloque uma data no futuro");
+			FacesContext context = FacesContext.getCurrentInstance();
+			context.addMessage(button.getClientId(context), message);
+			return null;
+		}
 	}
-	
+
 	public String delete(Task task) {
 		this.taskService.delete(task);
 		this.tasks.remove(task);
 		return "taskListing?faces-redirect=true";
 	}
-	
+
 	public String completed(Task task) {
 		task.setSituation(Situation.Concluída);
 		this.taskService.update(task);
 		this.allTasks = this.taskService.findAll();
 		return "taskListing?faces-redirect=true";
 	}
+
+	public UIComponent getButton() {
+		return button;
+	}
+
+	public void setButton(UIComponent button) {
+		this.button = button;
+	}
+
 }
